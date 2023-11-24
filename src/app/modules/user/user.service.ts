@@ -1,16 +1,18 @@
-import { TUser } from './user.interface';
+import { TOrders, TUser } from './user.interface';
 import { User } from './user.model';
 
 // Creating a user
+
 const createUserIntoDB = async (userData: TUser) => {
-  if (await User.isUserExists(userData.userId)) {
-    throw new Error('User Already Exists');
-  }
+  // if (await User.isUserExists(userData.userId)) {
+  //   throw new Error('User Already Exists');
+  // }
   const result = await User.create(userData);
   return result;
 };
 
 // getting all users
+
 const getAllUsersFromDB = async () => {
   const users: TUser[] = await User.aggregate([
     {
@@ -35,12 +37,14 @@ const getAllUsersFromDB = async () => {
 };
 
 // Getting an user
+
 const getAnUserFromDB = async (userId: number) => {
   const result = await User.findOne({ userId });
   return result;
 };
 
 // Updating the user
+
 const updateAnUserFromDB = async (
   userId: number,
   updatedUserData: Partial<TUser>,
@@ -57,6 +61,7 @@ const updateAnUserFromDB = async (
 };
 
 // Deleting the user
+
 const deleteAnUserFromDB = async (userId: number): Promise<void> => {
   const existingUser = await User.findOne({ userId });
 
@@ -66,10 +71,25 @@ const deleteAnUserFromDB = async (userId: number): Promise<void> => {
   await User.deleteOne({ userId });
 };
 
+// Adding a new product
+
+const addANewProductToUser = async (userId: number, orderData: TOrders): Promise<TUser | null> => {
+
+  const existingUser = await User.findOne({ userId });
+
+  if (!existingUser) {
+    throw new Error('User not found!');
+  }
+
+  const updatedUser = await User.addProductToUser(userId, orderData);
+  return updatedUser;
+}
+
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getAnUserFromDB,
   updateAnUserFromDB,
   deleteAnUserFromDB,
+  addANewProductToUser,
 };

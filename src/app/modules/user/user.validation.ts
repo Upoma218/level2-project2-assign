@@ -16,13 +16,12 @@ const orderSchema = z.object({
   price: z.number().min(0),
   quantity: z.number().min(1),
 });
-
 // ZOD user validation schema
 
 const userValidationSchema = z.object({
   userId: z.number(),
   username: z.string().min(1),
-  password: z.string().min(1).max(20),
+  password: z.string().min(1),
   fullName: fullNameSchema,
   age: z.number().min(1),
   email: z.string().min(1),
@@ -32,4 +31,7 @@ const userValidationSchema = z.object({
   orders: z.array(orderSchema).optional(),
 });
 
-export default userValidationSchema;
+export const UserValidationSchema = {
+  userValidationSchema,
+  orderSchema
+};

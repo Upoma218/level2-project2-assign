@@ -1,4 +1,3 @@
-import { Schema, model } from 'mongoose';
 import {
   TAddress,
   TFullName,
@@ -8,6 +7,7 @@ import {
 } from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
+import { Schema, model } from 'mongoose';
 
 const fullNameSchema = new Schema<TFullName>({
   firstName: {
@@ -69,8 +69,7 @@ const userSchema = new Schema<TUser, UserModel>({
   },
   password: {
     type: String,
-    required: [true, 'User password is required'],
-    maxlength: [20, "Passwaord length can't be more then 20 charectors"],
+    required: [true, 'User password is required']
   },
   fullName: {
     type: fullNameSchema,
@@ -118,6 +117,15 @@ userSchema.pre('save', async function (next) {
 userSchema.set('toJSON', {
   transform: function (doc, ret) {
     delete ret.password;
+    delete ret._id;
+    delete ret.__v;
+    delete ret.address._id;
+    delete ret.fullName._id;
+    if (ret.orders && Array.isArray(ret.orders)) {
+      ret.orders.forEach((order) => {
+        delete order._id;
+      });
+    }
     return ret;
   },
 });
@@ -127,10 +135,8 @@ userSchema.statics.isUserExists = async function name(userId: number) {
   return existingUser;
 };
 
-userSchema.statics.updateUser = async function (
-  userId: number,
-  updatedUserData: Partial<TUser>,
-): Promise<TUser | null> {
+userSchema.statics.updateUser = async function (userId: number, updatedUserData: Partial<TUser>,): Promise<TUser | null> {
+
   const updatedUser = await this.findOneAndUpdate(
     { userId },
     { $set: updatedUserData },
@@ -141,4 +147,22 @@ userSchema.statics.updateUser = async function (
 };
 
 // creating user model
+
+userSchema.statics.addProductToUser = async function (
+  userId: number,
+  orderData: TOrders
+): Promise<TUser | null> {
+  const updatedUser = await this.findOneAndUpdate(
+    { userId },
+    { $push: { orders: orderData } },
+    { new: true }
+  );
+
+  if (!updatedUser) {
+    throw new Error('User not found!');
+  }
+
+  return updatedUser;
+};
+
 export const User = model<TUser, UserModel>('User', userSchema);

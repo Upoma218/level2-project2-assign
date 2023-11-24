@@ -36,10 +36,7 @@ export type TUser = {
 // Static method
 
 export interface UserModel extends Model<TUser> {
-  // eslint-disable-next-line no-unused-vars
-  updateUser(
-    userId: number,
-    updatedUserData: Partial<TUser>,
-  ): Promise<TUser | null>;
+  updateUser(userId: number, updatedUserData: Partial<TUser>): Promise<TUser | null>;
   isUserExists(userId: number): Promise<TUser | null>;
+  addProductToUser(userId: number, orderData: TOrders): Promise<TUser | null>;
 }

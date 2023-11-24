@@ -1,20 +1,21 @@
 import { Request, Response } from 'express';
-import userValidationSchema from './user.validation';
+import { UserValidationSchema} from './user.validation';
 import { UserServices } from './user.service';
 import { User } from './user.model';
 
 // Creating a user
 
 const createUser = async (req: Request, res: Response) => {
+
   try {
+
     const { user: userData } = req.body;
 
     // data validation using zod
-
-    const zodParseData = userValidationSchema.parse(userData);
+    const zodParseData = UserValidationSchema.userValidationSchema.parse(userData);
     const result = await UserServices.createUserIntoDB(zodParseData);
 
-    // when I will give post request for users, orders property won't be showed in response
+    // when I will give post request for users, orders property won't be shown in response
     if (!userData.orders) {
       zodParseData.orders = undefined;
     }
@@ -24,10 +25,10 @@ const createUser = async (req: Request, res: Response) => {
       message: 'User created successfully!',
       data: result,
     });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'Failed to create a new user!',
+      message: err.message||'Failed to create a new user!',
       data: err,
     });
   }
@@ -144,13 +145,61 @@ const deleteAnUser = async (req: Request, res: Response) => {
   }
 };
 
+
+// Adding product
+
+const addANewProduct = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const parseInt = parseFloat(userId);
+    const { productName, price, quantity } = req.body;
+
+    const zodParseOrderData = UserValidationSchema.orderSchema.parse({
+      productName,
+      price,
+      quantity,
+    });
+
+    const updatedUser = await UserServices.addANewProductToUser(parseInt, zodParseOrderData);
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Order created successfully!',
+      data: null,
+    });
+  } 
+  catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to add a new product',
+      error: {
+        code: 500,
+        description: 'Failed to add a new product',
+      },
+    });
+  }
+};
+
+
+
 export const UserController = {
   createUser,
   getAllUsers,
   getAnUser,
   updateAnUser,
   deleteAnUser,
+  addANewProduct,
   // getAllOrdersOfUser,
-  // getTotalPriceOfProducts,
   // getTotalPriceOfProducts
 };
