@@ -1,6 +1,6 @@
-import express, { Application, Request, Response } from "express";
-import cors from "cors";
-import { UserRoutes } from "./app/modules/user/user.routes";
+import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
+import { UserRoutes } from './app/modules/user/user.routes';
 
 const app: Application = express();
 
@@ -11,8 +11,8 @@ app.use(cors());
 app.use('/api/users', UserRoutes);
 
 const getController = (req: Request, res: Response) => {
-  res.send("Hello World!");
+  res.send('Hello World!');
 };
 
-app.get("/", getController);
+app.get('/', getController);
 export default app;

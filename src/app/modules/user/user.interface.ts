@@ -1,4 +1,5 @@
-// import { Model } from 'mongoose';
+/* eslint-disable no-unused-vars */
+import { Model } from 'mongoose';
 
 export type TFullName = {
   firstName: string;
@@ -17,7 +18,6 @@ export type TOrders = {
   quantity: number;
 };
 
-
 // creating user type
 
 export type TUser = {
@@ -30,15 +30,16 @@ export type TUser = {
   isActive: boolean;
   hobbies: string[];
   address: TAddress;
-  orders: TOrders[];
+  orders?: TOrders[];
 };
 
-export default TUser;
+// Static method
 
-/* export interface UserModel extends Model<TUser> {
-// 
+export interface UserModel extends Model<TUser> {
   // eslint-disable-next-line no-unused-vars
-  isUserExists(userId : number): Promise<TUser | null>;
-
-
-} */
+  updateUser(
+    userId: number,
+    updatedUserData: Partial<TUser>,
+  ): Promise<TUser | null>;
+  isUserExists(userId: number): Promise<TUser | null>;
+}

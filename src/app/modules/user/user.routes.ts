@@ -6,10 +6,10 @@ const router = express.Router();
 // Users routes
 
 router.post('/', UserController.createUser);
-// router.get('/', UserController.getUsers);
-// router.get('/:userId', UserController.getAnUser);
-// router.put('/:userId', UserController.updateAnUser);
-// router.delete('/:userId', UserController.deleteAnUser);
+router.get('/', UserController.getAllUsers);
+router.get('/:userId', UserController.getAnUser);
+router.put('/:userId', UserController.updateAnUser);
+router.delete('/:userId', UserController.deleteAnUser);
 
 // // Orders Routes
 

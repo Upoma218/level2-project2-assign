@@ -1,5 +1,11 @@
 import { Schema, model } from 'mongoose';
-import { TAddress, TFullName, TOrders, TUser/* , UserModel */ } from './user.interface';
+import {
+  TAddress,
+  TFullName,
+  TOrders,
+  TUser,
+  UserModel,
+} from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
 
@@ -19,38 +25,38 @@ const fullNameSchema = new Schema<TFullName>({
 const addressSchema = new Schema<TAddress>({
   street: {
     type: String,
-    required: [true, 'Street name is required']
+    required: [true, 'Street name is required'],
   },
   city: {
     type: String,
-    required: [true, 'City name is required']
+    required: [true, 'City name is required'],
   },
   country: {
     type: String,
-    required: [true, 'Country name is required']
-  }
+    required: [true, 'Country name is required'],
+  },
 });
 
 const ordersSchema = new Schema<TOrders>({
   productName: {
     type: String,
-    required: [true, 'Product name is required']
+    required: [true, 'Product name is required'],
   },
   price: {
     type: Number,
     required: [true, 'Price is required'],
-    minlength: 0
+    minlength: 0,
   },
   quantity: {
     type: Number,
     required: [true, 'Please, enter the the amount of product'],
-    minlength: [1, 'Please , select mininum 1 product']
+    minlength: [1, 'Please , select mininum 1 product'],
   },
 });
 
 // creating user schema
 
-const userSchema = new Schema<TUser/* , UserModel */>({
+const userSchema = new Schema<TUser, UserModel>({
   userId: {
     type: Number,
     required: [true, 'User ID is required'],
@@ -72,7 +78,7 @@ const userSchema = new Schema<TUser/* , UserModel */>({
   },
   age: {
     type: Number,
-    required: [true, "Please enter your age"]
+    required: [true, 'Please enter your age'],
   },
   email: {
     type: String,
@@ -91,16 +97,17 @@ const userSchema = new Schema<TUser/* , UserModel */>({
   },
   address: {
     type: addressSchema,
-    required: [true, 'Please, enter your address']
+    required: [true, 'Please, enter your address'],
   },
   orders: {
-    type: [ordersSchema]
-  }
+    type: [ordersSchema],
+  },
 });
 
+// secured password using bcrypt
+
 userSchema.pre('save', async function (next) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this;
+  const user = this as TUser;
   user.password = await bcrypt.hash(
     user.password,
     Number(config.bcrypt_salt_rounds),
@@ -108,11 +115,30 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
+userSchema.set('toJSON', {
+  transform: function (doc, ret) {
+    delete ret.password;
+    return ret;
+  },
 });
 
+userSchema.statics.isUserExists = async function name(userId: number) {
+  const existingUser = await User.findOne({ userId });
+  return existingUser;
+};
+
+userSchema.statics.updateUser = async function (
+  userId: number,
+  updatedUserData: Partial<TUser>,
+): Promise<TUser | null> {
+  const updatedUser = await this.findOneAndUpdate(
+    { userId },
+    { $set: updatedUserData },
+    { new: true },
+  );
+
+  return updatedUser;
+};
 
 // creating user model
-export const User = model<TUser/* , UserModel */>('User', userSchema);
+export const User = model<TUser, UserModel>('User', userSchema);
