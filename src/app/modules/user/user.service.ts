@@ -113,15 +113,35 @@ const addANewProductToUser = async (
 };
 
 const getUserOrdersFromDB = async (userId: number) => {
-  const result = await User.aggregate([
-    {
-      $match: { userId: { $eq: userId } },
-    },
-    
 
-  ]);
-  return result[0]?.orders || [];
-};
+    const result = await User.aggregate([
+      { $match: { userId: userId } },
+      {
+        $project: {
+          _id: 0,
+          orders: {
+            $map: {
+              input: '$orders',
+              as: 'order',
+              in: {
+                productName: '$$order.productName',
+                price: '$$order.price',
+                quantity: '$$order.quantity',
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    if (result.length === 0) {
+      throw new Error('User not found!');
+    }
+
+    const orders = result[0].orders || [];
+
+    return orders;
+  }
 
 export const UserServices = {
   createUserIntoDB,

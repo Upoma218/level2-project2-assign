@@ -196,10 +196,10 @@ const getAllOrdersOfUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: 'Order fetched successfully!',
+      message: 'Orders fetched successfully!',
       data: {
-        orders: result.orders || [],
-      },
+        orders: result
+      }
     });
   }
    catch (err) {
