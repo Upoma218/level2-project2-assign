@@ -4,9 +4,10 @@ import { User } from './user.model';
 // Creating a user
 
 const createUserIntoDB = async (userData: TUser) => {
-  // if (await User.isUserExists(userData.userId)) {
-  //   throw new Error('User Already Exists');
-  // }
+  if (await User.isUserExists(userData.userId)) {
+    throw new Error('User Already Exists');
+  }
+
   const result = await User.create(userData);
   return result;
 };
@@ -39,7 +40,31 @@ const getAllUsersFromDB = async () => {
 // Getting an user
 
 const getAnUserFromDB = async (userId: number) => {
-  const result = await User.findOne({ userId });
+  const result = await User.aggregate([
+    {
+      $match: { userId: { $eq: userId } },
+    },
+    {
+      $project: {
+        _id: 0,
+        userId: 1,
+        username: 1,
+        fullName: {
+          firstName: 1,
+          lastName: 1,
+        },
+        age: 1,
+        email: 1,
+        isActive: 1,
+        hobbies: 1,
+        address: {
+          street: 1,
+          city: 1,
+          country: 1,
+        },
+      },
+    },
+  ]);
   return result;
 };
 
@@ -73,8 +98,10 @@ const deleteAnUserFromDB = async (userId: number): Promise<void> => {
 
 // Adding a new product
 
-const addANewProductToUser = async (userId: number, orderData: TOrders): Promise<TUser | null> => {
-
+const addANewProductToUser = async (
+  userId: number,
+  orderData: TOrders,
+): Promise<TUser | null> => {
   const existingUser = await User.findOne({ userId });
 
   if (!existingUser) {
@@ -83,7 +110,18 @@ const addANewProductToUser = async (userId: number, orderData: TOrders): Promise
 
   const updatedUser = await User.addProductToUser(userId, orderData);
   return updatedUser;
-}
+};
+
+const getUserOrdersFromDB = async (userId: number) => {
+  const result = await User.aggregate([
+    {
+      $match: { userId: { $eq: userId } },
+    },
+    
+
+  ]);
+  return result[0]?.orders || [];
+};
 
 export const UserServices = {
   createUserIntoDB,
@@ -92,4 +130,5 @@ export const UserServices = {
   updateAnUserFromDB,
   deleteAnUserFromDB,
   addANewProductToUser,
+  getUserOrdersFromDB,
 };

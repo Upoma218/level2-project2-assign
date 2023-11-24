@@ -1,40 +1,33 @@
-import { Request, Response } from 'express';
-import { UserValidationSchema} from './user.validation';
+import { UserValidationSchema } from './user.validation';
 import { UserServices } from './user.service';
 import { User } from './user.model';
+import { Request, Response } from 'express';
 
 // Creating a user
 
 const createUser = async (req: Request, res: Response) => {
-
   try {
-
-    const { user: userData } = req.body;
-
-    // data validation using zod
-    const zodParseData = UserValidationSchema.userValidationSchema.parse(userData);
+    const user = req.body;
+    const zodParseData = UserValidationSchema.userValidationSchema.parse(user);
     const result = await UserServices.createUserIntoDB(zodParseData);
 
-    // when I will give post request for users, orders property won't be shown in response
-    if (!userData.orders) {
-      zodParseData.orders = undefined;
-    }
-
-    res.status(200).json({
+    res.status(500).json({
       success: true,
       message: 'User created successfully!',
       data: result,
     });
-  } catch (err: any) {
+  } 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  catch (err) {
     res.status(500).json({
       success: false,
-      message: err.message||'Failed to create a new user!',
+      message: 'Failed to create a new user!',
       data: err,
     });
   }
 };
 
-// getting all users
+// Getting all users
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getAllUsersFromDB();
@@ -69,7 +62,6 @@ const getAnUser = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(404).json({
-      success: false,
       message: 'User not found',
       error: {
         code: 404,
@@ -78,6 +70,7 @@ const getAnUser = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 // Updating the user
 const updateAnUser = async (req: Request, res: Response) => {
@@ -98,7 +91,6 @@ const updateAnUser = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(404).json({
-      success: false,
       message: 'User not found',
       error: {
         code: 404,
@@ -139,12 +131,14 @@ const deleteAnUser = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: 'Failed to delete the user!',
-      data: err,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
     });
   }
 };
-
 
 // Adding product
 
@@ -160,7 +154,10 @@ const addANewProduct = async (req: Request, res: Response) => {
       quantity,
     });
 
-    const updatedUser = await UserServices.addANewProductToUser(parseInt, zodParseOrderData);
+    const updatedUser = await UserServices.addANewProductToUser(
+      parseInt,
+      zodParseOrderData,
+    );
 
     if (!updatedUser) {
       return res.status(404).json({
@@ -178,8 +175,7 @@ const addANewProduct = async (req: Request, res: Response) => {
       message: 'Order created successfully!',
       data: null,
     });
-  } 
-  catch (err) {
+  } catch (err) {
     res.status(500).json({
       success: false,
       message: 'Failed to add a new product',
@@ -191,7 +187,31 @@ const addANewProduct = async (req: Request, res: Response) => {
   }
 };
 
+// Getting orders of an user
+const getAllOrdersOfUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const parseInt = parseFloat(userId);
+    const result = await UserServices.getUserOrdersFromDB(parseInt);
 
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: {
+        orders: result.orders || [],
+      },
+    });
+  }
+   catch (err) {
+    res.status(404).json({
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    });
+  }
+};
 
 export const UserController = {
   createUser,
@@ -200,6 +220,6 @@ export const UserController = {
   updateAnUser,
   deleteAnUser,
   addANewProduct,
-  // getAllOrdersOfUser,
+  getAllOrdersOfUser,
   // getTotalPriceOfProducts
 };

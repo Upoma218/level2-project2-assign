@@ -13,7 +13,7 @@ router.delete('/:userId', UserController.deleteAnUser);
 
 // // Orders Routes
 
-// router.get('/:userId/orders', UserController.getAllOrdersOfUser);
+router.get('/:userId/orders', UserController.getAllOrdersOfUser);
 // router.get('/:userId/orders/total-price', UserController.getTotalPriceOfProducts);
 router.put('/:userId/orders', UserController.addANewProduct);
 

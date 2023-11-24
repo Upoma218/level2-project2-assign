@@ -82,7 +82,6 @@ const userSchema = new Schema<TUser, UserModel>({
   email: {
     type: String,
     required: [true, 'Email is required'],
-    unique: true,
   },
   isActive: {
     type: Boolean,
@@ -130,7 +129,7 @@ userSchema.set('toJSON', {
   },
 });
 
-userSchema.statics.isUserExists = async function name(userId: number) {
+userSchema.statics.isUserExists = async function userCheck(userId: number) {
   const existingUser = await User.findOne({ userId });
   return existingUser;
 };

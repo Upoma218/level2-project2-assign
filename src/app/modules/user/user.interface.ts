@@ -30,13 +30,16 @@ export type TUser = {
   isActive: boolean;
   hobbies: string[];
   address: TAddress;
-  orders?: TOrders[];
+  orders?: TOrders[] ;
 };
 
 // Static method
 
 export interface UserModel extends Model<TUser> {
-  updateUser(userId: number, updatedUserData: Partial<TUser>): Promise<TUser | null>;
+  updateUser(
+    userId: number,
+    updatedUserData: Partial<TUser>,
+  ): Promise<TUser | null>;
   isUserExists(userId: number): Promise<TUser | null>;
   addProductToUser(userId: number, orderData: TOrders): Promise<TUser | null>;
 }
