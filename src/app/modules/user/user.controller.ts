@@ -11,18 +11,24 @@ const createUser = async (req: Request, res: Response) => {
     const zodParseData = UserValidationSchema.userValidationSchema.parse(user);
     const result = await UserServices.createUserIntoDB(zodParseData);
 
+    // when I will give post request for users, orders property won't be showed in response
+    if (!user.orders) {
+      zodParseData.orders = undefined;
+    }
+
     res.status(500).json({
       success: true,
       message: 'User created successfully!',
       data: result,
     });
-  } 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  catch (err) {
+  } catch (err) {
     res.status(500).json({
       success: false,
-      message: 'Failed to create a new user!',
-      data: err,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
     });
   }
 };
@@ -70,7 +76,6 @@ const getAnUser = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 // Updating the user
 const updateAnUser = async (req: Request, res: Response) => {
@@ -198,11 +203,10 @@ const getAllOrdersOfUser = async (req: Request, res: Response) => {
       success: true,
       message: 'Orders fetched successfully!',
       data: {
-        orders: result
-      }
+        orders: result,
+      },
     });
-  }
-   catch (err) {
+  } catch (err) {
     res.status(404).json({
       message: 'User not found',
       error: {
@@ -226,8 +230,7 @@ const getTotalPriceOfProducts = async (req: Request, res: Response) => {
         totalPrice,
       },
     });
-  }
-  catch(err){
+  } catch (err) {
     res.status(404).json({
       message: 'User not found',
       error: {
@@ -236,8 +239,7 @@ const getTotalPriceOfProducts = async (req: Request, res: Response) => {
       },
     });
   }
-}
-
+};
 
 export const UserController = {
   createUser,
@@ -247,5 +249,5 @@ export const UserController = {
   deleteAnUser,
   addANewProduct,
   getAllOrdersOfUser,
-  getTotalPriceOfProducts
+  getTotalPriceOfProducts,
 };
