@@ -213,13 +213,19 @@ const getAllOrdersOfUser = async (req: Request, res: Response) => {
   }
 };
 
-const getTotalPriceOfProducts = async (userId: number): Promise<number> => {
-  try{
-    const result = await User.getTotalPriceOfProducts(userId);
+const getTotalPriceOfProducts = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const parseInt = parseFloat(userId);
+    const totalPrice = await UserServices.getTotalPriceOfProducts(parseInt);
 
-    return result;
-    
-
+    res.status(200).json({
+      success: true,
+      message: 'Total price fetched successfully!',
+      data: {
+        totalPrice,
+      },
+    });
   }
   catch(err){
     res.status(404).json({
