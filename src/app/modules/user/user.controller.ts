@@ -8,7 +8,8 @@ import { Request, Response } from 'express';
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
-   
+    
+   //user validation with zod
     const zodParseData = UserValidationSchema.userValidationSchema.parse(user);
     const result = await UserServices.createUserIntoDB(zodParseData);
 
