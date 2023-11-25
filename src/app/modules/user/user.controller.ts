@@ -9,17 +9,18 @@ const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
     const zodParseData = UserValidationSchema.userValidationSchema.parse(user);
-    const result = await UserServices.createUserIntoDB(zodParseData);
-
-    res.status(500).json({
+    const result = await UserServices.createUserIntoDB(zodParseData)
+    res.status(200).json({
       success: true,
       message: 'User created successfully!',
       data: result,
     });
-  } catch (err) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err : any) {
+    
     res.status(500).json({
       success: false,
-      message: 'User not found',
+      message: err.message||'Something went wrong',
       error: {
         code: 404,
         description: 'User not found!',

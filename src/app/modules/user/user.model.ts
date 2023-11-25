@@ -112,6 +112,9 @@ userSchema.pre('save', async function (next) {
   );
   next();
 });
+userSchema.post('save', function(doc, next) {
+  next()
+})
 
 userSchema.set('toJSON', {
   transform: function (doc, ret) {
