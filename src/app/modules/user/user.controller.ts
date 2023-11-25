@@ -213,6 +213,26 @@ const getAllOrdersOfUser = async (req: Request, res: Response) => {
   }
 };
 
+const getTotalPriceOfProducts = async (userId: number): Promise<number> => {
+  try{
+    const result = await User.getTotalPriceOfProducts(userId);
+
+    return result;
+    
+
+  }
+  catch(err){
+    res.status(404).json({
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    });
+  }
+}
+
+
 export const UserController = {
   createUser,
   getAllUsers,
@@ -221,5 +241,5 @@ export const UserController = {
   deleteAnUser,
   addANewProduct,
   getAllOrdersOfUser,
-  // getTotalPriceOfProducts
+  getTotalPriceOfProducts
 };
