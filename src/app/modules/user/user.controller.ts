@@ -8,19 +8,21 @@ import { Request, Response } from 'express';
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
+   
     const zodParseData = UserValidationSchema.userValidationSchema.parse(user);
-    const result = await UserServices.createUserIntoDB(zodParseData)
+    const result = await UserServices.createUserIntoDB(zodParseData);
+
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
       data: result,
     });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err : any) {
+  
+  } catch (err ) {
     
     res.status(500).json({
       success: false,
-      message: err.message||'Something went wrong',
+      message: 'User not found',
       error: {
         code: 404,
         description: 'User not found!',
@@ -218,7 +220,7 @@ const getTotalPriceOfProducts = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const parseInt = parseFloat(userId);
     const totalPrice = await UserServices.getTotalPriceOfProducts(parseInt);
-
+   
     res.status(200).json({
       success: true,
       message: 'Total price calculated successfully!',
@@ -228,7 +230,7 @@ const getTotalPriceOfProducts = async (req: Request, res: Response) => {
     });
   } catch (err) {
     res.status(404).json({
-      message: 'User not found',
+      message: 'User not found or there is no order for this user',
       error: {
         code: 404,
         description: 'User not found!',

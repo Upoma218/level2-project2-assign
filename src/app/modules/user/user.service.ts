@@ -163,7 +163,7 @@ const getTotalPriceOfProducts = async (userId: number) => {
     },
   ]);
 
-  const totalAmount = result[0].totalAmount || 0;
+  const totalAmount = result[0].totalAmount || 0 ;
 
   return totalAmount;
 };
