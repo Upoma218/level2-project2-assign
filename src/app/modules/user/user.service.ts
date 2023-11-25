@@ -140,8 +140,8 @@ const getUserOrdersFromDB = async (userId: number) => {
 
 const getTotalPriceOfProducts = async (userId: number) => {
   const result = await User.aggregate([
-    { 
-      $match: { userId: userId } 
+    {
+      $match: { userId: userId },
     },
     {
       $unwind: '$orders',
@@ -177,5 +177,5 @@ export const UserServices = {
   deleteAnUserFromDB,
   addANewProductToUser,
   getUserOrdersFromDB,
-  getTotalPriceOfProducts
+  getTotalPriceOfProducts,
 };

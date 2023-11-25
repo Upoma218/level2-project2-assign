@@ -11,11 +11,6 @@ const createUser = async (req: Request, res: Response) => {
     const zodParseData = UserValidationSchema.userValidationSchema.parse(user);
     const result = await UserServices.createUserIntoDB(zodParseData);
 
-    // when I will give post request for users, orders property won't be showed in response
-    if (!user.orders) {
-      zodParseData.orders = undefined;
-    }
-
     res.status(500).json({
       success: true,
       message: 'User created successfully!',

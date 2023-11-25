@@ -69,7 +69,7 @@ const userSchema = new Schema<TUser, UserModel>({
   },
   password: {
     type: String,
-    required: [true, 'User password is required']
+    required: [true, 'User password is required'],
   },
   fullName: {
     type: fullNameSchema,
@@ -134,8 +134,10 @@ userSchema.statics.isUserExists = async function userCheck(userId: number) {
   return existingUser;
 };
 
-userSchema.statics.updateUser = async function (userId: number, updatedUserData: Partial<TUser>,): Promise<TUser | null> {
-
+userSchema.statics.updateUser = async function (
+  userId: number,
+  updatedUserData: Partial<TUser>,
+): Promise<TUser | null> {
   const updatedUser = await this.findOneAndUpdate(
     { userId },
     { $set: updatedUserData },
@@ -149,12 +151,12 @@ userSchema.statics.updateUser = async function (userId: number, updatedUserData:
 
 userSchema.statics.addProductToUser = async function (
   userId: number,
-  orderData: TOrders
+  orderData: TOrders,
 ): Promise<TUser | null> {
   const updatedUser = await this.findOneAndUpdate(
     { userId },
     { $push: { orders: orderData } },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedUser) {
