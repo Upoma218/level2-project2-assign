@@ -221,7 +221,7 @@ const getTotalPriceOfProducts = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: 'Total price fetched successfully!',
+      message: 'otal price calculated successfully!',
       data: {
         totalPrice,
       },
