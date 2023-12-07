@@ -80,7 +80,6 @@ const updateAnUserFromDB = async (
   }
 
   const updatedUser = await User.updateUser(userId, updatedUserData);
-
   return updatedUser;
 };
 

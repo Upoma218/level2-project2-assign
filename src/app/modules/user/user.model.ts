@@ -141,11 +141,13 @@ userSchema.statics.updateUser = async function (
   userId: number,
   updatedUserData: Partial<TUser>,
 ): Promise<TUser | null> {
+  
   const updatedUser = await this.findOneAndUpdate(
     { userId },
     { $set: updatedUserData },
     { new: true },
   );
+
 
   return updatedUser;
 };

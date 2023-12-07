@@ -81,12 +81,12 @@ const updateAnUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const parseInt = parseFloat(userId);
-    const updatedUserData = req.body.user;
-
+    const updatedUserData = req.body;
     const result = await UserServices.updateAnUserFromDB(
       parseInt,
       updatedUserData,
     );
+
 
     res.status(200).json({
       success: true,
